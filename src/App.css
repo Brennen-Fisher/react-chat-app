@@ -46,8 +46,42 @@ body {
 
 }
 
+.messageInput{
+  width: 560px;
+  position: fixed;
+  bottom: 0;
+}
+
+.messages{
+  height: 750px;
+  padding-left: 10px;
+}
+
 .chatContainer{
   flex:1;
+}
+
+.searchForm{
+  display: flex;
+  flex-direction: column;
+}
+
+.searchForm input{
+  width: 100%;
+  padding: 10px 10px;
+}
+
+.searchForm .chatInfo{
+  width: 100%;
+  background-color: #282c34; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 0px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  font-size: 1.25rem;
 }
 
 main {
@@ -73,11 +107,7 @@ main::-webkit-scrollbar-thumb {
 
 form {
   height: 10vh;
-  position: fixed;
-  bottom: 0;
   background-color: rgb(24, 23, 23);
-  width: 100%;
-  max-width: 728px;
   display: flex;
   font-size: 1.5rem;
 }
@@ -97,6 +127,9 @@ input {
   outline: none;
   border: none;
   padding: 0 10px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 button {
@@ -141,6 +174,10 @@ p {
   position: relative;
   color: white;
   text-align: center;
+  margin-block-start: 0em;
+  margin-block-end: 0em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
 }
 
 .message {
@@ -157,10 +194,12 @@ p {
   color: white;
   background: #0b93f6;
   align-self: flex-end;
+  margin-block-start: 0em;
 }
 .received p {
   background: #e5e5ea;
   color: black;
+  margin-block-start: 0em;
 }
 
 img {
