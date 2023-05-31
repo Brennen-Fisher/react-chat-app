@@ -33,47 +33,48 @@ body {
   background-color: rgb(40, 37, 53);
 }
 
-.chatroomContainer{
+.chatroomContainer {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
 }
 
-.userContainer{
-  flex:.3;
+.userContainer {
+  flex: .3;
   border-right-width: 1px;
   border-right-color: white;
 
 }
 
-.messageInput{
+.messageInput {
   width: 560px;
   position: fixed;
   bottom: 0;
 }
 
-.messages{
+.messages {
   height: 750px;
   padding-left: 10px;
 }
 
-.chatContainer{
-  flex:1;
+.chatContainer {
+  flex: 1;
 }
 
-.searchForm{
+.searchForm {
   display: flex;
   flex-direction: column;
 }
 
-.searchForm input{
+.searchForm input {
   width: 100%;
   padding: 10px 10px;
 }
 
-.searchForm .chatInfo{
+.searchForm .chatInfo {
   width: 100%;
-  background-color: #282c34; /* Green */
+  background-color: #282c34;
+  /* Green */
   border: none;
   color: white;
   padding: 15px 0px;
@@ -105,9 +106,40 @@ main::-webkit-scrollbar-thumb {
   background: #6649b8;
 }
 
+.routeBack{
+  padding-top:20%;
+}
+
+.formContainer {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+}
+
+.formContainer input {
+  margin-bottom: 20px;
+}
+
+.formContainer form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30%;
+  align-items: center;
+}
+
+.formContainer button {
+  width: 100%;
+  background-color: rgb(56, 56, 143);
+  padding: 0;
+  
+}
+
 form {
   height: 10vh;
-  background-color: rgb(24, 23, 23);
+  
   display: flex;
   font-size: 1.5rem;
 }
@@ -133,7 +165,8 @@ input {
 }
 
 button {
-  background-color: #282c34; /* Green */
+  background-color: #282c34;
+  /* Green */
   border: none;
   color: white;
   padding: 15px 32px;
@@ -160,7 +193,8 @@ button:disabled {
 
 
 
-ul, li {
+ul,
+li {
   text-align: left;
   list-style: none;
 }
@@ -196,6 +230,7 @@ p {
   align-self: flex-end;
   margin-block-start: 0em;
 }
+
 .received p {
   background: #e5e5ea;
   color: black;
