@@ -1,10 +1,10 @@
-import './App.css';
+import './App.scss';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { v4 as uuid } from "uuid";
 import { arrayUnion, getFirestore, doc, setDoc, serverTimestamp, onSnapshot } from 'firebase/firestore';
-import { collection, query, where, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { collection, query, where, getDoc, updateDoc, getDocs, Timestamp } from "firebase/firestore";
 import React, { useState, useRef, useEffect, useContext } from "react";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
@@ -17,24 +17,12 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { useCollectionData } from 'react-firebase-hooks/firestore';
 
 import './firebase';
+import { db, auth } from "./firebase";
 
-const firebaseConfig = firebase.initializeApp({
-  apiKey: "AIzaSyAw83er0zUuA8ojuGAHxdVFrzO7EhM39kc",
-  authDomain: "react-chat-app-cf837.firebaseapp.com",
-  projectId: "react-chat-app-cf837",
-  storageBucket: "react-chat-app-cf837.appspot.com",
-  messagingSenderId: "546548669925",
-  appId: "1:546548669925:web:98fe1500f32ccfb3d9230c",
-  measurementId: "G-77EPKSWWJV"
-});
 
-const auth = firebase.auth();
-const firestore = firebase.firestore();
-const db = getFirestore(firebaseConfig);
 
 function App() {
 
-  const [user] = useAuthState(auth);
 
   const { currentUser } = useContext(AuthContext);
 
@@ -143,7 +131,7 @@ function Chats() {
 
   const [chats, setChats] = useState([]);
   const { currentUser } = useContext(AuthContext);
-  //const {dispatch} = useContext(ChatContext);
+  const { dispatch } = useContext(ChatContext);
 
   useEffect(() => {
     const getChats = () => {
@@ -155,40 +143,35 @@ function Chats() {
       };
     };
 
-    currentUser.uid && getChats()
+    currentUser.uid && getChats();
 
   }, [currentUser.uid]);
   //console.log(Object.entries(chats));
 
   const handleSelect = (u) => {
-    //dispatch({type:"CHANGE_USER", payload:u})
+    dispatch({ type: "CHANGE_USER", payload: u })
   }
 
   return (
-    <div>
-      {Object.entries(chats)?.map((chat) => (
+    <div className='usersList'>
+      {chats != null ? Object.entries(chats)?.map((chat) => (
         <div key={chat[0]} onClick={() => handleSelect(chat[1].userInfo)}>
-          <h1>{chat[1].userInfo.userName}</h1>
+          <span>{chat[1].userInfo.displayName}</span>
         </div>
-      ))}
-      <div>
-        <h1>john</h1>
-      </div>
-      <div>
-        <h1>janet</h1>
-      </div>
+      )) : <div>{console.log("error in select")}</div>}
     </div>
   );
 }
 
 function SearchUsers() {
-  const [username, setUsername] = useState("");
+  const { currentUser } = useContext(AuthContext);
+  const [displayName, setDisplayName] = useState("");
   const [user, setUser] = useState(null);
   const [err, setErr] = useState(false);
 
   const handleSearch = async () => {
     const usersRef = collection(db, "users")
-    const q = query(usersRef, where("userName", "==", username));
+    const q = query(usersRef, where("displayName", "==", displayName));
 
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
@@ -197,7 +180,7 @@ function SearchUsers() {
     });
   }
 
-  const handleKey = e => {
+  const handleKey = (e) => {
     e.code === "Enter" && handleSearch();
 
   }
@@ -205,34 +188,39 @@ function SearchUsers() {
   const handleSelect = async () => {
     const combUid = auth.currentUser.uid > user.uid ? auth.currentUser.uid + user.uid : user.uid + auth.currentUser.uid;
     console.log(combUid);
+    console.log(currentUser.userName);
     const res = await getDoc(doc(db, "chats", combUid));
+    console.log("just before if statement");
     if (!res.exists()) {
+      console.log("Inside if statement");
+      console.log(auth.currentUser.uid);
+      console.log(auth.currentUser.displayName);
       await setDoc(doc(db, "chats", combUid), { messages: [] });
-      await updateDoc(doc(db, "userChats", auth.currentUser.uid),
+      await updateDoc(doc(db, "userChats", user.uid),
         {
           [combUid + ".userInfo"]: {
             uid: auth.currentUser.uid,
-            userName: auth.currentUser.userName
+            displayName: auth.currentUser.displayName
           },
           [combUid + ".date"]: serverTimestamp()
         });
 
-      await updateDoc(doc(db, "userChats", user.uid),
+      await updateDoc(doc(db, "userChats", auth.currentUser.uid),
         {
           [combUid + ".userInfo"]: {
             uid: user.uid,
-            userName: user.userName
+            displayName: user.displayName
           },
           [combUid + ".date"]: serverTimestamp()
         });
     }
-  }
+  };
   return (
     <div className="searchForm">
-      <input type="text" placeholder='Find A User' onKeyDown={handleKey} onChange={e => setUsername(e.target.value)}></input>
+      <input type="text" placeholder='Find A User' onKeyDown={handleKey} onChange={e => setDisplayName(e.target.value)}></input>
       {user && <div className="userChat" onClick={handleSelect}>
         <div className='chatInfo'>
-          <span>{user?.userName}</span>
+          <span>{user.displayName}</span>
         </div>
       </div>}
     </div>
@@ -243,34 +231,31 @@ function ChatRoom() {
   const { currentUser } = useContext(AuthContext);
   //console.log("made it to chatroom");
   const dummy = useRef();
-  const messagesRef = firestore.collection('messages');
+  //const messagesRef = firestore.collection('messages');
   // const query = messagesRef.orderBy('createdAt').limit(25);
   // const [messages] = useCollectionData(query, { idField: 'id' });
-  let isConnected = messages == null ? 'true' : 'false';
-
-  const [formValue, setFormValue] = useState('');
+  //let isConnected = messages == null ? 'true' : 'false';
 
   const logUser = async () => {
     if (currentUser.isNewUser) {
-      console.log("Logged a new User");
       await setDoc(doc(db, "userChats", currentUser.uid), {});
 
     }
   }
-  
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    const { uid } = auth.currentUser;
 
-    await messagesRef.add({
-      text: formValue,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      uid
-    })
-    setFormValue('');
+  // const sendMessage = async (e) => {
+  //   e.preventDefault();
+  //   const { uid } = auth.currentUser;
 
-    dummy.current.scrollIntoView({ behavior: 'smooth' });
-  }
+  //   await messagesRef.add({
+  //     text: formValue,
+  //     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+  //     uid
+  //   })
+  //   setFormValue('');
+
+  //   dummy.current.scrollIntoView({ behavior: 'smooth' });
+  // }
 
   logUser();
 
@@ -280,16 +265,20 @@ function ChatRoom() {
 
   const [text, setText] = useState("");
 
-  const handleSend = async() =>{
+  const handleSend = async (e) => {
+    e.preventDefault();
     await updateDoc(doc(db, "chats", data.chatId), {
       messages: arrayUnion({
         id: uuid(),
         text,
         senderId: currentUser.uid,
-        date: firebase.firestore.FieldValue.serverTimestamp(),
+        date: Timestamp.now()
       }),
     });
+    dummy.current.scrollIntoView({ behavior: 'smooth' });
+    setText("");
   }
+
 
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
@@ -301,7 +290,6 @@ function ChatRoom() {
     };
   }, [data.chatId]);
 
-  console.log(messages)
 
   return (
     <div className="chatroomContainer">
@@ -310,17 +298,22 @@ function ChatRoom() {
         <Chats />
       </div>
       <div className="chatContainer">
+        <div className='nameContainer'>
+          <h4>{data.user?.displayName}</h4>
+        </div>
         <div className="messages">
-          {messages && messages.map(msg => <ChatMessage key={msg.id} message={msg} />)}
+          {messages && messages.map(msg => <ChatMessage key={msg.uuid} message={msg} />)}
           <div ref={dummy}></div>
         </div>
-        <div className='messageInput'>
-          <form onSubmit={sendMessage}>
-            <input value={formValue} onChange={(e) => setFormValue(e.target.value)} />
-            <button type="submit">
-              enter
-            </button>
-          </form>
+        <div className='stickler'>
+          <div className='messageInput'>
+            <form onSubmit={handleSend}>
+              <input value={text} onChange={(e) => setText(e.target.value)} />
+              <button type='submit'>
+                enter
+              </button>
+            </form>
+          </div>
         </div>
       </div >
     </div>
@@ -328,10 +321,11 @@ function ChatRoom() {
 }
 
 function ChatMessage(props) {
-  const { text, uid } = props.message;
-  const messageClass = uid === auth.currentUser.uid ? 'sent' : 'received';
-  let isConnected = text == null ? 'true' : 'false';
-  console.log(text)
+  const { currentUser } = useContext(AuthContext);
+  const { dispatch } = useContext(ChatContext);
+  const { text, uid, senderId } = props.message;
+  const messageClass = senderId === currentUser.uid ? 'sent' : 'received';
+  //let isConnected = text == null ? 'true' : 'false';
   return (
     <div className={`message ${messageClass}`}>
       <p>{text}</p>

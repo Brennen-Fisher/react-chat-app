@@ -15,41 +15,34 @@ const Register = () => {
     e.preventDefault();
     const displayName = e.target[0].value;
     const email = e.target[1].value;
-    const password = e.target[2].value; 
+    const password = e.target[2].value;
 
     try {
       //Create user
       const res = await createUserWithEmailAndPassword(auth, email, password);
 
-      //Create a unique image name
-      const date = new Date().getTime();
-      const storageRef = ref(storage, `${displayName + date}`);
-
-      await uploadBytesResumable(storageRef).then(() => {
-        getDownloadURL(storageRef).then(async (downloadURL) => {
-          try {
-            //Update profile
-            await updateProfile(res.user, {
-              displayName,
-              photoURL: downloadURL,
-            });
-            //create user on firestore
-            await setDoc(doc(db, "users", res.user.uid), {
-              uid: res.user.uid,
-              displayName,
-              email,
-            });
-
-            //create empty user chats on firestore
-            await setDoc(doc(db, "userChats", res.user.uid), {});
-            navigate("/");
-          } catch (err) {
-            console.log(err);
-            setErr(true);
-            setLoading(false);
-          }
+      console.log("Does it hit any of this?1");
+      try {
+        //Update profile
+        await updateProfile(res.user, {
+          displayName
         });
-      });
+        //create user on firestore
+        await setDoc(doc(db, "users", res.user.uid), {
+          uid: res.user.uid,
+          displayName,
+          email,
+        });
+
+        //create empty user chats on firestore
+        await setDoc(doc(db, "userChats", res.user.uid), {});
+        console.log("Hit empty chat")
+        navigate("/");
+      } catch (err) {
+        console.log(err);
+        setErr(true);
+        setLoading(false);
+      }
     } catch (err) {
       setErr(true);
       setLoading(false);
@@ -62,7 +55,7 @@ const Register = () => {
         <span className="logo"></span>
         <span className="title">Register</span>
         <form onSubmit={handleSubmit}>
-          <input required type="text" placeholder="display name" />
+          <input required type="text" placeholder="username" />
           <input required type="email" placeholder="email" />
           <input required type="password" placeholder="password" />
           <button disabled={loading}>Sign up</button>
