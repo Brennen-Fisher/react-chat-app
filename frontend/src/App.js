@@ -130,6 +130,7 @@ function SignOut() {
 function Chats() {
 
   const [chats, setChats] = useState([]);
+  const [currentChat, setCurrent] = useState();
   const { currentUser } = useContext(AuthContext);
   const { dispatch } = useContext(ChatContext);
 
@@ -149,16 +150,28 @@ function Chats() {
   //console.log(Object.entries(chats));
 
   const handleSelect = (u) => {
-    dispatch({ type: "CHANGE_USER", payload: u })
+    console.log(u.uid);
+    console.log(currentChat);
+    if (currentChat != u.uid) {
+      setCurrent(u.uid);
+      dispatch({ type: "CHANGE_USER", payload: u });
+    } else {
+      setCurrent(null);
+      dispatch({ type: "NO_USER", payload: null });
+    }
   }
 
   return (
     <div className='usersList'>
-      {chats != null ? Object.entries(chats)?.map((chat) => (
-        <div key={chat[0]} onClick={() => handleSelect(chat[1].userInfo)}>
-          <span>{chat[1].userInfo.displayName}</span>
-        </div>
-      )) : <div>{console.log("error in select")}</div>}
+      <ul>
+        {chats != null ? Object.entries(chats)?.map((chat) => (
+          <li>
+            <div key={chat[0]} onClick={() => handleSelect(chat[1].userInfo)}>
+              <span>{chat[1].userInfo.displayName}</span>
+            </div>
+          </li>
+        )) : <div>{console.log("error in select")}</div>}
+      </ul>
     </div>
   );
 }
@@ -279,17 +292,25 @@ function ChatRoom() {
     setText("");
   }
 
+  const handleLoad = async () => {
+    console.log("text");
+    //await dummy.current.scrollIntoView({ behavior: 'smooth' });
+  }
 
-  useEffect(() => {
-    const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
-      doc.exists() && setMessages(doc.data().messages);
-    });
+  useEffect(() => {    
+    if (data.chatId != 'null') {
+      const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
+        console.log(data);
+        doc.exists() && setMessages(doc.data().messages);
+      });
 
-    return () => {
-      unSub();
-    };
+      return () => {
+        unSub();
+      };
+    } else {
+      setMessages(null);
+    }
   }, [data.chatId]);
-
 
   return (
     <div className="chatroomContainer">
@@ -298,25 +319,30 @@ function ChatRoom() {
         <Chats />
       </div>
       <div className="chatContainer">
-        <div className='nameContainer'>
-          <h4>{data.user?.displayName}</h4>
-        </div>
-        <div className="messages">
-          {messages && messages.map(msg => <ChatMessage key={msg.uuid} message={msg} />)}
-          <div ref={dummy}></div>
-        </div>
         <div className='stickler'>
-          <div className='messageInput'>
-            <form onSubmit={handleSend}>
-              <input value={text} onChange={(e) => setText(e.target.value)} />
-              <button type='submit'>
-                enter
-              </button>
-            </form>
+          <div className='nameContainer'>
+            <h4>{data.user?.displayName}</h4>
           </div>
         </div>
+        <div className="messages">
+          {messages ? messages.map(msg => <ChatMessage key={msg.uuid} message={msg} />) : <h1>Please Select a user</h1>}
+          <div ref={dummy}></div>
+        </div>
+        {
+          messages ?
+            <div className='stickler'>
+              <div className='messageInput'>
+                <form onSubmit={handleSend}>
+                  <input value={text} onChange={(e) => setText(e.target.value)} />
+                  <button type='submit'>
+                    enter
+                  </button>
+                </form>
+              </div>
+            </div>
+            : <div></div>}
       </div >
-    </div>
+    </div >
   );
 }
 

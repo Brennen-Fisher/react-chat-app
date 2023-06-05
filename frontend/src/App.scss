@@ -6,6 +6,7 @@ body {
   text-align: center;
   max-width: 728px;
   margin: 0 auto;
+
   section {
     display: flex;
     flex-direction: column;
@@ -13,6 +14,7 @@ body {
     min-height: 100vh;
     //background-color: rgb(40, 37, 53);
   }
+
   header {
     background-color: #181717;
     height: 10vh;
@@ -33,25 +35,28 @@ body {
 
 .chatroomContainer {
   background-color: rgb(40, 37, 53);
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    height: 90vh;
-    padding-top: 10vh;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  height: 90vh;
+  padding-top: 10vh;
 }
 
 .userContainer {
   flex: .3;
   border-right-width: 1px;
   border-right-color: white;
+
   .searchForm {
     display: flex;
     flex-direction: column;
     padding-bottom: 20px;
+
     input {
       width: 100%;
       padding: 10px 10px;
     }
+
     .chatInfo {
       width: 100%;
       background-color: #282c34;
@@ -65,12 +70,31 @@ body {
       font-size: 1.25rem;
     }
   }
-  
-  .usersList{
-    padding: 10px;
-    background-color: #38388F;
-    gap: 30px;
-    cursor: pointer;
+
+  .usersList {
+
+    //padding: 10px;
+    ul {
+      margin: 0px;
+      text-align: left;
+      padding-inline-start: 0 !important;
+    }
+
+    li {
+      text-align: center;
+      background-color: #38388F;
+      cursor: pointer;
+      // margin-block-start: 1em;
+      // margin-block-end: 1em;
+
+      div {
+        padding: 10px;
+        border-color: black;
+        border-style: solid;
+        border-width: 1px;
+      }
+    }
+
   }
 }
 
@@ -81,19 +105,23 @@ body {
 
 .chatContainer {
   flex: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   height: 89%;
-  input{
+
+  input {
     width: 100% !important;
   }
-  .messages{
-    height:auto;
+
+  .messages {
+    height: auto;
     margin-bottom: 14px;
   }
-  .stickler{
+
+  .stickler {
     position: sticky;
   }
+
   .messageInput {
     width: 560px;
     position: fixed;
@@ -123,7 +151,7 @@ main::-webkit-scrollbar-thumb {
   background: #6649b8;
 }
 
-.routeBack{
+.routeBack {
   margin-top: 200px !important;
 }
 
@@ -135,25 +163,30 @@ main::-webkit-scrollbar-thumb {
   align-items: center;
   padding-top: 50px;
   gap: 30px;
+
   input {
     margin-bottom: 20px;
   }
+
   form {
     display: flex;
     flex-direction: column;
     margin-bottom: 30%;
     align-items: center;
   }
+
   button {
     width: 100%;
     background-color: rgb(56, 56, 143);
-    padding: 15px;    
+    padding: 15px;
   }
-  p{
+
+  p {
     margin-top: 20px;
     background-color: rgb(56, 56, 143);
   }
-  p a{
+
+  p a {
     background-color: #fff;
     padding: 5px;
     border-radius: 20px;
@@ -162,9 +195,10 @@ main::-webkit-scrollbar-thumb {
 
 form {
   height: 10vh;
-  
+
   display: flex;
   font-size: 1.5rem;
+
   button {
     width: 20%;
     background-color: rgb(56, 56, 143);
@@ -240,18 +274,29 @@ p {
 
 .sent {
   flex-direction: row-reverse;
+
   p {
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
     color: white;
     background: #0b93f6;
     align-self: flex-end;
     margin-block-start: 0em;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
   }
 }
 
 .received p {
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
   background: #e5e5ea;
   color: black;
   margin-block-start: 0em;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
 }
 
 img {
