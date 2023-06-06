@@ -278,6 +278,8 @@ function ChatRoom() {
 
   const [text, setText] = useState("");
 
+  const [sHeight, setSHeight] = useState();
+
   const handleSend = async (e) => {
     e.preventDefault();
     await updateDoc(doc(db, "chats", data.chatId), {
@@ -292,12 +294,16 @@ function ChatRoom() {
     setText("");
   }
 
+  const handleScroll = async () => {
+    dummy.current.scrollIntoView({ behavior: 'smooth' });
+  }
+
   const handleLoad = async () => {
     console.log("text");
     //await dummy.current.scrollIntoView({ behavior: 'smooth' });
   }
 
-  useEffect(() => {    
+  useEffect(() => {
     if (data.chatId != 'null') {
       const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
         console.log(data);
@@ -326,6 +332,9 @@ function ChatRoom() {
         </div>
         <div className="messages">
           {messages ? messages.map(msg => <ChatMessage key={msg.uuid} message={msg} />) : <h1>Please Select a user</h1>}
+          <button className='posFixed' type='button' onClick={handleScroll} style={{display: messages ? 'inline' : 'none'}}  >
+            V
+          </button>
           <div ref={dummy}></div>
         </div>
         {
